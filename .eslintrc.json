@@ -1,0 +1,54 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
+  ],
+  "rules": {
+    "no-multi-spaces": "warn",
+    "no-multiple-empty-lines": "warn",
+    "no-use-before-define": "off",
+    // "@typescript-eslint/no-use-before-define": [
+    //   "warn",
+    //   { "ignoreTypeReferences": true }
+    // ],
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": "warn",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/no-named-as-default-member": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/ban-ts-comment": 1,
+    "@typescript-eslint/no-var-requires": 1,
+    "@typescript-eslint/no-empty-function": 1,
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-types": 1,
+    "import/no-unresolved": "off",
+    "react/no-children-prop": 1,
+    "no-console": "warn",
+    "prefer-const": "warn",
+    "require-await": "warn",
+    "react/jsx-uses-react": 2,
+    "prettier/prettier": 2,
+    "react/jsx-uses-vars": 2,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "linebreak-style": [0, "error", "lf"]
+  },
+  "plugins": ["prettier"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}

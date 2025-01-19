@@ -1,0 +1,6 @@
+{
+  "colorize": true,
+  "ignore": "hostname,pid,req,res,responseTime",
+  "translateTime": "UTC:yyyy-mm-dd'T'HH:MM:ss.l'Z'",
+  "messageFormat": "{if req}{req.method} {req.url} - {end}{if msg}{msg}{end}{if res.statusCode} - {res.statusCode}{end}{if responseTime} - {responseTime}ms{end}"
+}
