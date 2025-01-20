@@ -56,8 +56,12 @@ export default function DuplicateDetection() {
       if (entity) {
         setFields([]);
         setIsLoading(true);
-        const fields = await getBhEntityFields(entity);
-        setFields(fields);
+        try {
+          const fields = await getBhEntityFields(entity);
+          setFields(fields);
+        } catch (error) {
+          toast.error("Unable to fetch fields");
+        }
         setIsLoading(false);
       }
     }
@@ -71,17 +75,22 @@ export default function DuplicateDetection() {
     }
     setIsLoading(true);
 
-    const { duplicatesRecords, start: nextStart } = await getBhEntityDuplicates(
-      entity,
-      selectedFields,
-      start.current,
-      count
-    );
-    setDuplicates(duplicatesRecords);
-    setStart({
-      previous: start.current,
-      current: nextStart
-    });
+    try {
+      const { duplicatesRecords, start: nextStart } =
+        await getBhEntityDuplicates(
+          entity,
+          selectedFields,
+          start.current,
+          count
+        );
+      setDuplicates(duplicatesRecords);
+      setStart({
+        previous: start.current,
+        current: nextStart
+      });
+    } catch (error) {
+      toast.error("Unable to fetch duplicates. Please try again.");
+    }
 
     setIsLoading(false);
   };
