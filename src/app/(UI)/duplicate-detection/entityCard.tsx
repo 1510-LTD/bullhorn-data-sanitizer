@@ -103,8 +103,7 @@ const EntityCard = ({ entity, data, fieldMapping }: Props) => {
         if (row.id !== masterRow.id) {
           const mergeUrl = `https://cls20.bullhornstaffing.com/BullhornSTAFFING/Update/UpdUserMerges.cfm?BH___ENCR=TRUE&PROFILETYPE=${entity}&FROMRECORDID=${row.id}&JSONRESULT=true&TORECORDID=${masterRow.id}`;
           successCount++;
-          const mergeWindow = window.open(mergeUrl, "_blank");
-          console.log("mergeWindow", mergeWindow);
+          window.open(mergeUrl, "_blank");
         }
       } catch (error) {
         toast.error(`Unable to merge ${row.id} with ${masterRow.id}`);
