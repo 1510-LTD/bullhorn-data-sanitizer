@@ -15,7 +15,6 @@ import DataGrid from "@/component/datagrid";
 import { Button } from "@/component/button";
 import toast from "react-hot-toast";
 import { BhDuplicates } from "@/app/app-types";
-import { mergeBhEntity } from "@/app/hooks/useBullhorn";
 
 interface Props {
   entity: string;
