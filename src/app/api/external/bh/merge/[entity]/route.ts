@@ -18,9 +18,8 @@ export async function POST(
     const { errors, data } = validateRequest({
       body: {
         schema: z.object({
-          fields: z.array(z.string()),
-          start: z.number(),
-          count: z.number()
+          masterId: z.coerce.number(),
+          duplicateId: z.coerce.number()
         }),
         data: body
       }
@@ -28,13 +27,12 @@ export async function POST(
 
     if (errors) return sendValidationErrors(errors);
 
-    const { fields, start, count } = data.body;
+    const { masterId, duplicateId } = data.body;
 
-    const item = await BullhornService.getDuplicatesEntities(
+    const item = await BullhornService.mergeEntity(
       entity,
-      fields?.length > 0 ? fields : ["id", "firstName", "lastName", "email"],
-      start,
-      count
+      masterId,
+      duplicateId
     );
 
     return sendSuccessResponse({

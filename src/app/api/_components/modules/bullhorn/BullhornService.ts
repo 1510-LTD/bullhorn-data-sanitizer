@@ -9,7 +9,6 @@ import {
   BhHotlist,
   BhQueryParams
 } from "@/app/app-types";
-import { type } from "os";
 
 const candidateFields = {
   id: "id",
@@ -327,7 +326,7 @@ const generateQuery = (fields: string[], values: Record<string, unknown>) => {
   const otherQuery = otherFields
     .filter((field) => values[field])
     .map((field) => `${field}:${getValue(field)}`)
-    .join(" OR ");
+    .join(" AND ");
   if (otherQuery) {
     queryParts.push(`(${otherQuery})`);
   }
@@ -361,6 +360,30 @@ const getDuplicates = async (
   }
 };
 
+// https://cls20.bullhornstaffing.com/BullhornSTAFFING/Update/UpdUserMerges.cfm?jsonResult=true&fromRecordID=659545&toRecordID=398786&profileType=Candidate
+const mergeEntity = async (
+  entity: string,
+  masterId: number,
+  duplicateId: number
+) => {
+  try {
+    const axiosClient = await getBullhornAxiosClient();
+
+    const { data } = await axiosClient.get("/Update/UpdUserMerges.cfm", {
+      params: {
+        jsonResult: true,
+        fromRecordID: masterId,
+        toRecordID: duplicateId,
+        profileType: entity
+      }
+    });
+    console.log({ data });
+    return data;
+  } catch (error) {
+    throw (error as AxiosError)?.response?.data ?? error;
+  }
+};
+
 const BullhornService = {
   getRecipients,
   getPeoples,
@@ -371,6 +394,7 @@ const BullhornService = {
   createNote,
   getDistributionList,
   lookupExpanded,
-  getDuplicatesEntities
+  getDuplicatesEntities,
+  mergeEntity
 };
 export default BullhornService;

@@ -7,7 +7,7 @@ import TopHeading from "@/component/TopHeading";
 import { BodyText2 } from "@/utils/fonts";
 import styled from "styled-components";
 
-import { FlexColumnGapWrapper, FlexGapWrapper } from "@/utils/styled";
+import { FlexColumnGapWrapper } from "@/utils/styled";
 import { Autocomplete } from "@/component/autocomplete";
 import { titleCase } from "string-ts";
 import {
@@ -136,9 +136,13 @@ export default function DuplicateDetection() {
 
       <VerticalDivider />
 
-      {Object.keys(duplicates).length > 0 && (
+      {entity && Object.keys(duplicates).length > 0 && (
         <>
-          <EntityList data={duplicates} fieldMapping={fieldMapping} />
+          <EntityList
+            entity={entity}
+            data={duplicates}
+            fieldMapping={fieldMapping}
+          />
 
           <PaginationContainer>
             <Button

@@ -17,7 +17,8 @@ export enum BullhornQueryKey {
   BhCandidate = "BhCandidate",
   BhContacts = "BhContacts",
   BhHotlist = "BhHotlist",
-  BhDistributionList = "BhDistributionList"
+  BhDistributionList = "BhDistributionList",
+  BhMerge = "BhMerge"
 }
 
 type Queries = BhQueryParams;
@@ -66,6 +67,22 @@ export const useBhCandidates = (queries?: Queries) => {
     isError,
     error
   };
+};
+
+export const mergeBhEntity = async ({
+  entity,
+  masterId,
+  duplicateId
+}: {
+  entity: string;
+  masterId: string | number;
+  duplicateId: string | number;
+}) => {
+  const master = await api.post(`/api/external/bh/merge/${entity}`, {
+    masterId,
+    duplicateId
+  });
+  return master.data;
 };
 
 export const fetchBhRecipients = async (

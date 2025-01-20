@@ -15,15 +15,17 @@ import DataGrid from "@/component/datagrid";
 import { Button } from "@/component/button";
 import toast from "react-hot-toast";
 import { BhDuplicates } from "@/app/app-types";
+import { mergeBhEntity } from "@/app/hooks/useBullhorn";
 
 interface Props {
+  entity: string;
   data: BhDuplicates;
   fieldMapping: {
     [key: string]: string;
   };
 }
 
-const EntityCard = ({ data, fieldMapping }: Props) => {
+const EntityCard = ({ entity, data, fieldMapping }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [rows, setRows] = useState<
     {
@@ -66,6 +68,8 @@ const EntityCard = ({ data, fieldMapping }: Props) => {
     rowsList[0].isMaster = true;
 
     setRows(rowsList);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const toggleRowSelect = (id: string) => {
@@ -84,7 +88,7 @@ const EntityCard = ({ data, fieldMapping }: Props) => {
     setRows(tmpRows);
   };
 
-  const handleMergeWithMaster = () => {
+  const handleMergeWithMaster = async () => {
     const selectedRows = rows?.filter((row) => row.isSelected);
     const masterRow = selectedRows?.find((row) => row.isMaster);
 
@@ -93,9 +97,22 @@ const EntityCard = ({ data, fieldMapping }: Props) => {
       return;
     }
 
-    toast.success(
-      `Merged ${selectedRows.length - 1} rows with master ${masterRow.id}`
-    );
+    let successCount = 0;
+
+    for (const row of selectedRows) {
+      try {
+        if (row.id !== masterRow.id) {
+          const mergeUrl = `https://cls20.bullhornstaffing.com/BullhornSTAFFING/Update/UpdUserMerges.cfm?BH___ENCR=TRUE&PROFILETYPE=${entity}&FROMRECORDID=${row.id}&JSONRESULT=true&TORECORDID=${masterRow.id}`;
+          successCount++;
+          const mergeWindow = window.open(mergeUrl, "_blank");
+          console.log("mergeWindow", mergeWindow);
+        }
+      } catch (error) {
+        toast.error(`Unable to merge ${row.id} with ${masterRow.id}`);
+      }
+    }
+
+    toast.success(`Merged ${successCount} rows with master ${masterRow.id}`);
   };
 
   return (

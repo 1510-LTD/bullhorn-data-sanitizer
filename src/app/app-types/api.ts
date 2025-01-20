@@ -1,7 +1,6 @@
 import type { ZodError } from "zod";
 
 import { JsonData } from "./common";
-import { PaginationMeta } from "./pagination";
 import { NextApiRequest } from "next";
 
 export namespace Api {
@@ -38,10 +37,6 @@ export namespace Api {
     status: "success";
   }
 }
-
-export type PaginatedResponse<T> = Api.SuccessResponse<T> & {
-  pagination?: PaginationMeta;
-};
 
 export type TypedRequest = NextApiRequest;
 

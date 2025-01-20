@@ -1,21 +1,9 @@
-import { TypeOfDb, TypeOfDbSchema } from "@/database/db";
-import { ExtractTablesWithRelations } from "drizzle-orm";
-import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
-import { PgTransaction } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 export interface UserMeta {
   id: string;
   email: string;
 }
-
-export type DbOrTransactionType =
-  | PgTransaction<
-      NodePgQueryResultHKT,
-      TypeOfDbSchema,
-      ExtractTablesWithRelations<TypeOfDbSchema>
-    >
-  | TypeOfDb;
 
 export enum Actions {
   Create = "create",

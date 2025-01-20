@@ -1,5 +1,4 @@
 import { withMiddlewareAuthRequired } from "@auth0/nextjs-auth0/edge";
-import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
   matcher: [
@@ -8,23 +7,11 @@ export const config = {
 };
 
 // default middleware without auth for testing purposes
-export function middleware(request: NextRequest) {
-  // Allow all requests to pass through
-  return NextResponse.next();
-}
-
-// const customMiddleware = withMiddlewareAuthRequired((req) => {
-// this will handle bullhorn default post request
-// if (
-//   req.method === "POST" &&
-//   req.nextUrl.pathname.startsWith("/send-emails")
-// ) {
-//   return NextResponse.redirect(new URL(req.url), {
-//     status: 303
-//   });
-// }
-// Allow other requests to proceed as usual
+// export function middleware(request: NextRequest) {
+//   // Allow all requests to pass through
 //   return NextResponse.next();
-// });
+// }
 
-// export default customMiddleware;
+const customMiddleware = withMiddlewareAuthRequired();
+
+export default customMiddleware;

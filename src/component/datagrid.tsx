@@ -5,7 +5,7 @@ import { Checkbox } from "./checkbox";
 
 import { getConcatedUserName } from "@/utils/converter";
 import { Switch } from "./switch";
-import { BodyText1, BodyText2, CaptionText } from "@/utils/fonts";
+import { BodyText2, CaptionText } from "@/utils/fonts";
 
 type RowsWithSelectionProps = Record<string, unknown> & {
   isSelected: boolean;
@@ -23,8 +23,6 @@ interface GridProps {
 }
 
 const getColumnValue = (value: unknown) => {
-  console.log({ value });
-
   if (typeof value === "string") {
     return value;
   }

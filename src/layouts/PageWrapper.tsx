@@ -1,7 +1,5 @@
 "use client";
 
-import Unauthorized from "@/app/(UI)/no-access/no-access";
-import { useGetMe } from "@/app/hooks/useUsers";
 import { HomeIcon, IconWrapper, LogoutIcon } from "@/component/icons";
 
 import Loading from "@/component/Loading";
@@ -17,9 +15,8 @@ interface PageWrapperProps {
 
 const PageWrapper: React.FC<PageWrapperProps> = ({ children }) => {
   const { user: loggedInUser, isLoading: userLoading } = useUser();
-  const { user, isLoading } = useGetMe();
 
-  if (isLoading || userLoading) {
+  if (userLoading) {
     return <Loading />;
   }
 
@@ -41,13 +38,7 @@ const PageWrapper: React.FC<PageWrapperProps> = ({ children }) => {
         </IconWrapper>
       </HeaderIconWrapper>
 
-      {isLoading ? (
-        <Loading />
-      ) : user ? (
-        children
-      ) : (
-        <Unauthorized loggedInUserEmail={loggedInUser?.email} />
-      )}
+      {userLoading ? <Loading /> : children}
     </Wrapper>
   );
 };
