@@ -342,7 +342,7 @@ const generateQuery = (fields: string[], values: Record<string, unknown>) => {
   }
 
   return queryParts.length > 0
-    ? `(${queryParts.join(" OR ")}) AND isDeleted:0`
+    ? `(${queryParts.join(" AND ")}) AND isDeleted:0`
     : "isDeleted:0";
 };
 
