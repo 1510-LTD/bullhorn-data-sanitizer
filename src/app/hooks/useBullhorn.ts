@@ -42,7 +42,8 @@ export const getBhEntityDuplicates = async (
   entity: string,
   fields: string[],
   start: number,
-  count: number
+  count: number,
+  returnInSeconds?: number
 ): Promise<{
   duplicatesRecords: BhDuplicates;
   start: number;
@@ -50,7 +51,8 @@ export const getBhEntityDuplicates = async (
   const response = await api.post(`/api/external/bh/duplicates/${entity}`, {
     fields,
     start,
-    count
+    count,
+    returnInSeconds
   });
   return response?.data ?? [];
 };

@@ -95,7 +95,8 @@ export default function DuplicateDetection() {
           entity,
           selectedFields,
           start.current,
-          count
+          count,
+          50 // return the response in 50 seconds to avoid timeout
         );
       setDuplicates(duplicatesRecords);
       setStart({

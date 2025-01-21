@@ -244,13 +244,22 @@ const getDuplicatesEntities = async (
   entity: string,
   fields: string[],
   start = 0,
-  count = 10
-) => {
+  count = 10,
+  returnInSeconds?: number
+): Promise<{ duplicatesRecords: BhDuplicates; start: number }> => {
   const duplicatesRecords: BhDuplicates = {};
 
   const ENTITY_COUNT = 50;
 
   let shouldBreak = false;
+
+  // set a timer and if it is reached, break the loop
+  if (returnInSeconds) {
+    setTimeout(() => {
+      console.log("Timeout reached");
+      shouldBreak = true;
+    }, returnInSeconds * 1000);
+  }
 
   while (!shouldBreak) {
     const people = await getNEntities(entity, fields, start, ENTITY_COUNT);
@@ -258,6 +267,7 @@ const getDuplicatesEntities = async (
     if (!people.length) break;
 
     for (const person of people) {
+      if (shouldBreak) break;
       start += 1;
 
       // for each entity, check for duplicate entities using get duplicates api

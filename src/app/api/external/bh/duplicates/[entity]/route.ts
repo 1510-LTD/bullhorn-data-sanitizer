@@ -20,7 +20,8 @@ export async function POST(
         schema: z.object({
           fields: z.array(z.string()),
           start: z.number(),
-          count: z.number()
+          count: z.number(),
+          returnInSeconds: z.number().optional()
         }),
         data: body
       }
@@ -28,13 +29,14 @@ export async function POST(
 
     if (errors) return sendValidationErrors(errors);
 
-    const { fields, start, count } = data.body;
+    const { fields, start, count, returnInSeconds } = data.body;
 
     const item = await BullhornService.getDuplicatesEntities(
       entity,
       fields?.length > 0 ? fields : ["id", "firstName", "lastName", "email"],
       start,
-      count
+      count,
+      returnInSeconds
     );
 
     return sendSuccessResponse({
