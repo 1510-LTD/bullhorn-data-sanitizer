@@ -28,6 +28,12 @@ const bullhornEntities = [
 
 export default function DuplicateDetection() {
   const [entity, setEntity] = useState<(typeof bullhornEntities)[number]>();
+  const [availableFields, setAvailableFields] = useState<{
+    [key in (typeof bullhornEntities)[number]]?: {
+      label: string;
+      name: string;
+    }[];
+  }>();
   const [fields, setFields] = useState<{ label: string; name: string }[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [duplicates, setDuplicates] = useState<BhDuplicates>({});
@@ -54,15 +60,23 @@ export default function DuplicateDetection() {
   useEffect(() => {
     async function fetchFields() {
       if (entity) {
-        setFields([]);
-        setIsLoading(true);
-        try {
-          const fields = await getBhEntityFields(entity);
-          setFields(fields);
-        } catch (error) {
-          toast.error("Unable to fetch fields");
+        if (availableFields && availableFields[entity]) {
+          setFields(availableFields[entity]);
+        } else {
+          setFields([]);
+          setIsLoading(true);
+          try {
+            const fields = await getBhEntityFields(entity);
+            setFields(fields);
+            setAvailableFields((prev) => ({
+              ...prev,
+              [entity]: fields
+            }));
+          } catch (error) {
+            toast.error("Unable to fetch fields");
+          }
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     }
     fetchFields();
