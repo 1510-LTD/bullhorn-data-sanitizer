@@ -37,14 +37,7 @@ export default function DuplicateDetection() {
   const [fields, setFields] = useState<{ label: string; name: string }[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [duplicates, setDuplicates] = useState<BhDuplicates>({});
-  const [count, setCount] = useState(5);
-  const [start, setStart] = useState<{
-    current: number;
-    previous: number;
-  }>({
-    current: 0,
-    previous: 0
-  });
+  const [start, setStart] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const fieldMapping = useMemo(() => {
@@ -94,15 +87,12 @@ export default function DuplicateDetection() {
         await getBhEntityDuplicates(
           entity,
           selectedFields,
-          start.current,
-          count,
+          start,
+          10,
           50 // return the response in 50 seconds to avoid timeout
         );
       setDuplicates(duplicatesRecords);
-      setStart({
-        previous: start.current,
-        current: nextStart
-      });
+      setStart(nextStart);
     } catch (error) {
       toast.error("Unable to fetch duplicates. Please try again.");
     }
@@ -172,13 +162,10 @@ export default function DuplicateDetection() {
             <Button
               leadingIcon={<ArrowLeftIcon />}
               outlined
-              label="Previous"
-              disabled={start.previous === 0}
+              label="First Page"
+              disabled={start === 0}
               onClick={() => {
-                setStart({
-                  current: start.previous,
-                  previous: 0
-                });
+                setStart(0);
                 handleFindDuplicates();
               }}
             />
@@ -188,26 +175,6 @@ export default function DuplicateDetection() {
               trailingIcon={<ArrowRightIcon />}
               disabled={!Object.keys(duplicates).length}
               onClick={handleFindDuplicates}
-            />
-
-            <Autocomplete
-              label="Row per page"
-              placeholder="Row per page"
-              options={[
-                { value: 5, label: "5" },
-                { value: 10, label: "10" },
-                { value: 50, label: "50" },
-                { value: 100, label: "100" }
-              ]}
-              onChange={(value) => {
-                setCount(value as number);
-                setStart({
-                  current: 0,
-                  previous: 0
-                });
-                handleFindDuplicates();
-              }}
-              value={count}
             />
           </PaginationContainer>
         </>
