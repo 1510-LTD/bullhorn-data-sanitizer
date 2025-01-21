@@ -31,7 +31,7 @@ export default function DuplicateDetection() {
   const [fields, setFields] = useState<{ label: string; name: string }[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [duplicates, setDuplicates] = useState<BhDuplicates>({});
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(5);
   const [start, setStart] = useState<{
     current: number;
     previous: number;
@@ -179,6 +179,7 @@ export default function DuplicateDetection() {
               label="Row per page"
               placeholder="Row per page"
               options={[
+                { value: 5, label: "5" },
                 { value: 10, label: "10" },
                 { value: 50, label: "50" },
                 { value: 100, label: "100" }
