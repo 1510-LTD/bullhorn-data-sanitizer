@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, WrenchIcon } from "@/component/icons";
+import { ArrowRightIcon, ResetIcon, WrenchIcon } from "@/component/icons";
 import TopHeading from "@/component/TopHeading";
 
 import { BodyText2, CaptionText } from "@/utils/fonts";
@@ -173,9 +173,9 @@ export default function DuplicateDetection() {
           <PaginationContainer>
             <CaptionText>Searched in first {start + 1} records.</CaptionText>
             <Button
-              leadingIcon={<ArrowLeftIcon />}
+              leadingIcon={<ResetIcon />}
               outlined
-              label="First Page"
+              label="Start Over"
               disabled={start === 0}
               onClick={() => {
                 setStart(0);
@@ -183,7 +183,7 @@ export default function DuplicateDetection() {
               }}
             />
             <Button
-              label="Next"
+              label="Next Page"
               outlined
               trailingIcon={<ArrowRightIcon />}
               disabled={!selectedFields.length}
