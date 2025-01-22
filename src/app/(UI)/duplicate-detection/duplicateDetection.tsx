@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon, WrenchIcon } from "@/component/icons";
 import TopHeading from "@/component/TopHeading";
 
-import { BodyText2 } from "@/utils/fonts";
+import { BodyText2, CaptionText } from "@/utils/fonts";
 import styled from "styled-components";
 
 import { FlexColumnGapWrapper } from "@/utils/styled";
@@ -171,6 +171,7 @@ export default function DuplicateDetection() {
           />
 
           <PaginationContainer>
+            <CaptionText>Searched in first {start + 1} records.</CaptionText>
             <Button
               leadingIcon={<ArrowLeftIcon />}
               outlined
