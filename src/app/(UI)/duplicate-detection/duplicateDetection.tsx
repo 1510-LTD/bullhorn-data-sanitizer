@@ -53,6 +53,7 @@ export default function DuplicateDetection() {
   useEffect(() => {
     async function fetchFields() {
       if (entity) {
+        setDuplicates({});
         if (availableFields && availableFields[entity]) {
           setFields(availableFields[entity]);
         } else {
