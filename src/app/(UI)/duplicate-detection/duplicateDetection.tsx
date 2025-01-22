@@ -91,6 +91,9 @@ export default function DuplicateDetection() {
           10,
           50 // return the response in 50 seconds to avoid timeout
         );
+      if (Object.keys(duplicatesRecords).length === 0)
+        toast.error("No duplicates found");
+
       setDuplicates(duplicatesRecords);
       setStart(nextStart);
     } catch (error) {
@@ -102,7 +105,14 @@ export default function DuplicateDetection() {
 
   return (
     <Container>
-      {isLoading && <Loading />}
+      {isLoading && (
+        <Loading>
+          <BodyText2>
+            We are doing a complete search in your Bullhorn Database. This may
+            take a while. Please bear with us.
+          </BodyText2>
+        </Loading>
+      )}
       <TopHeading title={"Duplicate Detection"} icon={<WrenchIcon />} />
       <TitleBarContainer>
         <FlexColumnGapWrapper $gap="0.25">
@@ -121,6 +131,7 @@ export default function DuplicateDetection() {
           }))}
           onChange={(value) => {
             setEntity(value as (typeof bullhornEntities)[number]);
+            setStart(0);
           }}
           value={entity}
         />
@@ -150,7 +161,7 @@ export default function DuplicateDetection() {
 
       <VerticalDivider />
 
-      {entity && Object.keys(duplicates).length > 0 && (
+      {entity && selectedFields.length > 0 && (
         <>
           <EntityList
             entity={entity}
@@ -173,7 +184,7 @@ export default function DuplicateDetection() {
               label="Next"
               outlined
               trailingIcon={<ArrowRightIcon />}
-              disabled={!Object.keys(duplicates).length}
+              disabled={!selectedFields.length}
               onClick={handleFindDuplicates}
             />
           </PaginationContainer>

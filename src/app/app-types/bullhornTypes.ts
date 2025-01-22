@@ -77,7 +77,8 @@ export const BhQuerySchema = z.object({
   ids: z.array(z.number()).optional(),
   query: z.string().trim().optional(),
   page: z.number().optional(),
-  limit: z.number().optional()
+  limit: z.number().optional(),
+  fields: z.array(z.string()).optional()
 });
 
 export type BhQueryParams = z.infer<typeof BhQuerySchema>;

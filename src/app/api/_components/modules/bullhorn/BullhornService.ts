@@ -9,6 +9,7 @@ import {
   BhHotlist,
   BhQueryParams
 } from "@/app/app-types";
+import { logger } from "../../libraries/logger";
 
 const candidateFields = {
   id: "id",
@@ -65,7 +66,7 @@ const getCandidates = async (
   queries: BhQueryParams
 ): Promise<BhCandidate[]> => {
   try {
-    const { ids, query } = queries;
+    const { ids, query, fields, page, limit } = queries;
 
     const axiosClient = await getBullhornAxiosClient();
     if (ids?.length) {
@@ -73,7 +74,7 @@ const getCandidates = async (
         `/entity/Candidate/${ids.join(",")}`,
         {
           params: {
-            fields: Object.values(candidateFields).join(",")
+            fields: Object.values(fields || candidateFields).join(",")
           }
         }
       );
@@ -90,30 +91,13 @@ const getCandidates = async (
                   .join("")}* AND`
               : ""
           } isDeleted:0 AND NOT status:Archive`,
-          fields: Object.values(candidateFields).join(",")
+          fields: Object.values(fields || candidateFields).join(","),
+          start: page,
+          count: limit
         }
       });
       return data?.data as BhCandidate[];
     }
-  } catch (error) {
-    throw (error as AxiosError)?.response?.data ?? error;
-  }
-};
-
-const createNote = async (
-  entityId: number,
-  note: string
-): Promise<JsonData> => {
-  try {
-    const axiosClient = await getBullhornAxiosClient();
-    const { data } = await axiosClient.put(`/entity/Note`, {
-      personReference: {
-        id: entityId
-      },
-      comments: note,
-      action: "Sendgird Email"
-    });
-    return data;
   } catch (error) {
     throw (error as AxiosError)?.response?.data ?? error;
   }
@@ -132,7 +116,7 @@ const contactFields = {
 
 const getContacts = async (queries: BhQueryParams): Promise<BhContact[]> => {
   try {
-    const { ids, query } = queries;
+    const { ids, query, fields, page, limit } = queries;
     const axiosClient = await getBullhornAxiosClient();
     if (ids?.length) {
       const { data } = await axiosClient.get(
@@ -156,7 +140,9 @@ const getContacts = async (queries: BhQueryParams): Promise<BhContact[]> => {
                   .join("")}* AND`
               : ""
           } isDeleted:0 AND NOT status:Archive`,
-          fields: Object.values(candidateFields).join(",")
+          fields: Object.values(fields || contactFields).join(","),
+          start: page,
+          count: limit
         }
       });
       return data?.data as BhContact[];
@@ -209,6 +195,7 @@ const lookupExpanded = async (
         count
       }
     });
+
     return data;
   } catch (error) {
     throw (error as AxiosError)?.response?.data ?? error;
@@ -236,8 +223,40 @@ const getNEntities = async (
   start = 0,
   count = 10
 ) => {
-  const people = await lookupExpanded(entity, fields, undefined, start, count);
-  return people;
+  switch (entity) {
+    case "Candidate": {
+      const people = await getCandidates({
+        query: undefined,
+        ids: undefined,
+        fields,
+        page: start,
+        limit: count
+      });
+      return people;
+    }
+
+    case "ClientContact": {
+      const people = await getContacts({
+        query: undefined,
+        ids: undefined,
+        fields,
+        page: start,
+
+        limit: count
+      });
+      return people;
+    }
+    default: {
+      const people = await lookupExpanded(
+        entity,
+        fields,
+        undefined,
+        start,
+        count
+      );
+      return people;
+    }
+  }
 };
 
 const getDuplicatesEntities = async (
@@ -256,7 +275,6 @@ const getDuplicatesEntities = async (
   // set a timer and if it is reached, break the loop
   if (returnInSeconds) {
     setTimeout(() => {
-      console.log("Timeout reached");
       shouldBreak = true;
     }, returnInSeconds * 1000);
   }
@@ -270,12 +288,20 @@ const getDuplicatesEntities = async (
       if (shouldBreak) break;
       start += 1;
 
-      // for each entity, check for duplicate entities using get duplicates api
-      const duplicates = await getDuplicates(entity, fields, person);
+      // check if this person has values in fields
+      if (!fields.every((field) => person[field as keyof typeof person]))
+        continue;
 
-      // if duplicate entities are found, add them to the list
-      if (duplicates?.length > 1) {
-        duplicatesRecords[Number(person.id)] = duplicates;
+      try {
+        // for each entity, check for duplicate entities using get duplicates api
+        const duplicates = await getDuplicates(entity, fields, person);
+
+        // if duplicate entities are found, add them to the list
+        if (duplicates?.length > 1) {
+          duplicatesRecords[Number(person.id)] = duplicates;
+        }
+      } catch (error) {
+        logger.error(error);
       }
 
       if (Object.keys(duplicatesRecords).length >= count) {
@@ -294,7 +320,7 @@ const getDuplicatesEntities = async (
 const generateQuery = (fields: string[], values: Record<string, unknown>) => {
   const getValue = (field: string) => {
     if (typeof values[field] === "string") {
-      return `(${values[field]}*)`;
+      return `(${values[field]})`;
     }
     if (values[field] === undefined) {
       return "null";
@@ -357,6 +383,7 @@ const getDuplicates = async (
     const axiosClient = await getBullhornAxiosClient();
 
     const query = generateQuery(sanitizedFields, values);
+
     const { data } = await axiosClient.get(`/search/${entity}`, {
       params: {
         fields: "*",
@@ -370,30 +397,6 @@ const getDuplicates = async (
   }
 };
 
-// https://cls20.bullhornstaffing.com/BullhornSTAFFING/Update/UpdUserMerges.cfm?jsonResult=true&fromRecordID=659545&toRecordID=398786&profileType=Candidate
-const mergeEntity = async (
-  entity: string,
-  masterId: number,
-  duplicateId: number
-) => {
-  try {
-    const axiosClient = await getBullhornAxiosClient();
-
-    const { data } = await axiosClient.get("/Update/UpdUserMerges.cfm", {
-      params: {
-        jsonResult: true,
-        fromRecordID: masterId,
-        toRecordID: duplicateId,
-        profileType: entity
-      }
-    });
-    console.log({ data });
-    return data;
-  } catch (error) {
-    throw (error as AxiosError)?.response?.data ?? error;
-  }
-};
-
 const BullhornService = {
   getRecipients,
   getPeoples,
@@ -401,10 +404,8 @@ const BullhornService = {
   getCandidates,
   getContacts,
   getHotlists,
-  createNote,
   getDistributionList,
   lookupExpanded,
-  getDuplicatesEntities,
-  mergeEntity
+  getDuplicatesEntities
 };
 export default BullhornService;
