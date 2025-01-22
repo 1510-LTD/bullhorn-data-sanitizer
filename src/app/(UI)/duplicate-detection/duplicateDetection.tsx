@@ -108,8 +108,8 @@ export default function DuplicateDetection() {
       {isLoading && (
         <Loading>
           <BodyText2>
-            We are doing a complete search in your Bullhorn Database. This may
-            take a while. Please bear with us.
+            We are conducting a thorough search in your Bullhorn Database. This
+            might take a moment, thank you for your patience.
           </BodyText2>
         </Loading>
       )}
