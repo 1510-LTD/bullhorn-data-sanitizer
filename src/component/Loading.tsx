@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 
-export const Loading = ({ children }) => (
+export const Loading = ({ children }: { children?: React.ReactNode }) => (
   <Modal isOpen={true} $backgroundColor="transparent" onClose={() => {}}>
     <Wrapper>
       <div>

@@ -144,9 +144,39 @@ const EntityCard = ({ entity, data, fieldMapping }: Props) => {
           <>
             <GridContainer>
               <DataGrid
-                columnsList={columns.filter(
-                  (column) => !fieldsToRemove.includes(column)
-                )}
+                columnsList={columns
+                  .filter((column) => !fieldsToRemove.includes(column))
+                  .sort((a, b) => {
+                    const cA = fieldMapping?.[a] || a;
+                    const cB = fieldMapping?.[b] || b;
+
+                    if (cA === "id") return -1;
+                    if (cB === "id") return 1;
+
+                    if (
+                      cA.toLowerCase().includes("name") &&
+                      !cB.toLowerCase().includes("name")
+                    )
+                      return -1;
+                    if (
+                      !cA.toLowerCase().includes("name") &&
+                      cB.toLowerCase().includes("name")
+                    )
+                      return 1;
+
+                    if (
+                      cA.toLowerCase().includes("email") &&
+                      !cB.toLowerCase().includes("email")
+                    )
+                      return -1;
+                    if (
+                      !cA.toLowerCase().includes("email") &&
+                      cB.toLowerCase().includes("email")
+                    )
+                      return 1;
+
+                    return 0;
+                  })}
                 rows={rows || []}
                 toggleRowSelect={toggleRowSelect}
                 onMakingRowMaster={handleMakingRowMaster}
