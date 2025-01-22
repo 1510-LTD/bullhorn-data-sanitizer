@@ -1,9 +1,7 @@
 import axios from "axios";
 import { logger } from "../_components/libraries/logger";
 import { ForbiddenError } from "../_components/libraries/errors";
-
-const username = process.env.BULLHORN_API_USERNAME;
-const password = process.env.BULLHORN_API_PASSWORD;
+import { getSession } from "@auth0/nextjs-auth0";
 
 const BH_BASE_URL = process.env.BULLHORN_BASE_URL;
 
@@ -11,8 +9,17 @@ let cachedBhRestToken: string | null = null;
 
 async function getBhRestToken() {
   try {
+    const session = await getSession();
+
+    const { BULLHORN_API_USERNAME, BULLHORN_API_PASSWORD } =
+      session?.user?.user_metadata;
+
+    if (!BULLHORN_API_USERNAME || !BULLHORN_API_PASSWORD) {
+      throw new ForbiddenError("Missing Bullhorn API credentials");
+    }
+
     const { data }: any = await axios.get(
-      `https://ukuniversal.bullhornstaffing.com/universal-login/session/login?username=${username}&password=${password}`
+      `https://ukuniversal.bullhornstaffing.com/universal-login/session/login?username=${BULLHORN_API_USERNAME}&password=${BULLHORN_API_PASSWORD}`
     );
 
     const { sessions } = data;
