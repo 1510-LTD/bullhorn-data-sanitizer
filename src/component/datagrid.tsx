@@ -9,7 +9,7 @@ import { BodyText2, CaptionText } from "@/utils/fonts";
 
 type RowsWithSelectionProps = Record<string, unknown> & {
   isSelected: boolean;
-  isMaster: boolean;
+  isMaster?: boolean;
 };
 
 interface GridProps {
@@ -61,9 +61,11 @@ const DataGrid = ({
           <th>
             <CellHeaderWrapper>{"#"}</CellHeaderWrapper>
           </th>
-          <th>
-            <CellHeaderWrapper>Master</CellHeaderWrapper>
-          </th>
+          {onMakingRowMaster && (
+            <th>
+              <CellHeaderWrapper>Master</CellHeaderWrapper>
+            </th>
+          )}
           {columnsList.map((column, index) => (
             <th key={index}>
               <CellHeaderWrapper>
@@ -87,17 +89,19 @@ const DataGrid = ({
                 />
               </CellWrapper>
             </td>
-            <td>
-              <CellWrapper>
-                <Switch
-                  id={String(row.id)}
-                  checked={row.isMaster}
-                  onCheckedChange={() => {
-                    onMakingRowMaster && onMakingRowMaster(String(row.id));
-                  }}
-                />
-              </CellWrapper>
-            </td>
+            {onMakingRowMaster && (
+              <td>
+                <CellWrapper>
+                  <Switch
+                    id={String(row.id)}
+                    checked={row.isMaster}
+                    onCheckedChange={() => {
+                      onMakingRowMaster && onMakingRowMaster(String(row.id));
+                    }}
+                  />
+                </CellWrapper>
+              </td>
+            )}
             {columnsList.map((column, index) => (
               <td key={index}>
                 <CellWrapper>

@@ -56,8 +56,7 @@ const data: ToolCard[] = [
     icon: <LabProfileIcon />,
     iconColor: "teal",
     description:
-      "Search and validate incomplete entities in your bullhorn database",
-    isDisabled: true
+      "Search and validate incomplete entities in your bullhorn database"
   }
 ];
 

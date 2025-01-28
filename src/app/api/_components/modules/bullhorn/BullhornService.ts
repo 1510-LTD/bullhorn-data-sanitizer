@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { BhDuplicates, BhRecipient, JsonData } from "@/app/app-types";
+import { BhDuplicates, BhRecipient } from "@/app/app-types";
 import { getBullhornAxiosClient } from "@/app/api/_lib/BhAxiosClient";
 import { AxiosError } from "axios";
 
@@ -22,28 +22,6 @@ const candidateFields = {
   mobile: "mobile",
   email: "email",
   customText10: "customText10"
-};
-
-const getRecipients = async ({
-  query
-}: BhQueryParams): Promise<BhRecipient[]> => {
-  try {
-    const axiosClient = await getBullhornAxiosClient();
-    const { data } = await axiosClient.get(`/lookup/expanded`, {
-      params: {
-        entity: ["ClientContact", "Candidate", "CorporateUser", "Lead"].join(
-          ","
-        ),
-        fields: Object.values(candidateFields).join(","),
-        count: 10,
-        isCountPerEntity: true,
-        filter: query
-      }
-    });
-    return data;
-  } catch (error) {
-    throw (error as AxiosError)?.response?.data ?? error;
-  }
 };
 
 const getPeoples = async ({ ids }: BhQueryParams): Promise<BhRecipient[]> => {
@@ -152,18 +130,6 @@ const getContacts = async (queries: BhQueryParams): Promise<BhContact[]> => {
   }
 };
 
-const getDistributionList = async (): Promise<JsonData> => {
-  try {
-    const axiosClient = await getBullhornAxiosClient();
-    const { data } = await axiosClient.get(
-      `/query/DistributionList?fields=id%2Cname%2Cowner(id%2ClastName%2CfirstName%2Cenabled)%2CisReadOnly&start=500&count=500&orderBy=name&where=id%3E0`
-    );
-    return data;
-  } catch (error) {
-    throw (error as AxiosError)?.response?.data ?? error;
-  }
-};
-
 const getHotlists = async (): Promise<BhHotlist[]> => {
   try {
     const axiosClient = await getBullhornAxiosClient();
@@ -241,7 +207,6 @@ const getNEntities = async (
         ids: undefined,
         fields,
         page: start,
-
         limit: count
       });
       return people;
@@ -315,6 +280,25 @@ const getDuplicatesEntities = async (
     duplicatesRecords,
     start
   };
+};
+
+const getInvalidEntities = async (
+  entity: string,
+  fields: string[],
+  start = 0,
+  count = 50
+): Promise<{ invalidRecords: { [key: string]: unknown }[]; count: number }> => {
+  const axiosClient = await getBullhornAxiosClient();
+  const { data } = await axiosClient.get(`/query/${entity}`, {
+    params: {
+      fields: "*",
+      where: fields.map((field) => `(${field} IS NULL)`).join(" AND "),
+      start,
+      count,
+      showTotalMatched: true
+    }
+  });
+  return data;
 };
 
 const generateQuery = (fields: string[], values: Record<string, unknown>) => {
@@ -398,14 +382,11 @@ const getDuplicates = async (
 };
 
 const BullhornService = {
-  getRecipients,
   getPeoples,
   getFields,
-  getCandidates,
-  getContacts,
   getHotlists,
-  getDistributionList,
   lookupExpanded,
-  getDuplicatesEntities
+  getDuplicatesEntities,
+  getInvalidEntities
 };
 export default BullhornService;
