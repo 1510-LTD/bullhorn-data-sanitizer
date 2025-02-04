@@ -3,7 +3,7 @@ import { logger } from "../_components/libraries/logger";
 import { ForbiddenError } from "../_components/libraries/errors";
 import { getSession } from "@auth0/nextjs-auth0";
 
-const BH_BASE_URL = process.env.BULLHORN_BASE_URL;
+let BH_BASE_URL = "https://rest20.bullhornstaffing.com/rest-services/";
 
 let cachedBhRestToken: string | null = null;
 
@@ -23,11 +23,13 @@ async function getBhRestToken() {
     );
 
     const { sessions } = data;
-    const accessToken = sessions?.filter(
+    const restSession = sessions?.filter(
       (session: { name: string }) => session.name === "rest"
-    )[0].value?.token;
+    )[0].value;
 
-    return accessToken;
+    BH_BASE_URL = restSession.endpoint;
+
+    return restSession.token;
   } catch (error) {
     logger.error(error, "Error fetching BhRestToken:");
     throw new Error("Error fetching BhRestToken");
